@@ -36,27 +36,27 @@ class FlappyBird:
 		self.__birdY = min(self.__birdY+5,self._HEIGHT-BIRD_SCALE_Y)# +5 or hit the ground
 		#see if we died
 		if self.__dead:
-			return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,True,self.__Y
+			return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,True,self.__Y//20
 
 		#all pipes right to the bird
 		pipesBefore = self.__pipesX[self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2]
 		
 		#move pipes & background
+		self.__Y+=1
+		if self.__Y %10 == 0:
+			self.__pipesX-=1
+			#collision
+			bird = (self._WIDTH//2-BIRD_SCALE_X//2,self.__birdY,BIRD_SCALE_X,BIRD_SCALE_Y,self.__birdAngle)
+			pipesTop = (self.__pipesX,0,PIPE_SCALE_X,self.__pipesY)
+			pipesBottom = (self.__pipesX,self.__pipesY+PIPE_OFFSET_Y,PIPE_SCALE_X,self._HEIGHT)
+			
+			colides = False
+			if colides:
+				self.__dead = True
 
-		self.__pipesX-=1
-		self.__Y+=2
-		#collision
-		bird = (self._WIDTH//2-BIRD_SCALE_X//2,self.__birdY,BIRD_SCALE_X,BIRD_SCALE_Y,self.__birdAngle)
-		pipesTop = (self.__pipesX,0,PIPE_SCALE_X,self.__pipesY)
-		pipesBottom = (self.__pipesX,self.__pipesY+PIPE_OFFSET_Y,PIPE_SCALE_X,self._HEIGHT)
-		
-		colides = False
-		if colides:
-			self.__dead = True
-
-		#score
-		if (pipesBefore+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
-			self.__score+=1
+			#score
+			if (pipesBefore+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
+				self.__score+=1
 
 
 		#remove pipes
@@ -70,7 +70,7 @@ class FlappyBird:
 
 
 
-		return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,False,self.__Y
+		return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,False,self.__Y//20
 
 	def __call__(self, *args, **kwds):
 		return self.get(*args, **kwds)
