@@ -1,6 +1,6 @@
 #%%
-BIRD_SCALE_X = 50
-BIRD_SCALE_Y = 40
+BIRD_SCALE_X = 18*3//18*18
+BIRD_SCALE_Y = int(BIRD_SCALE_X/18*12)
 PIPE_SCALE_X = 50
 PIPE_OFFSET_Y = 200
 PIPE_DISTANCE = 200
@@ -9,7 +9,7 @@ import numpy as np
 from random import randint
 from typing import Optional,List
 #%%
-def __call__(*args, **kwargs):
+def FlappyBird(*args, **kwargs):
 	return Environment(*args, **kwargs)
 #%%
 class Environment:
@@ -61,12 +61,11 @@ class Environment:
 		
 		#move pipes & background
 		self.__X+=1
-		if self.__X %10 == 0:
-			self.__pipesX-=1
+		self.__pipesX-=1
 
 			#score
-			if (pipesBefore+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
-				self.__score+=1
+		if (pipesBefore+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
+			self.__score+=1
 
 
 		#remove pipes
@@ -91,11 +90,12 @@ class Environment:
 class Bird:
 	def __init__(self,height):
 		self._HEIGHT = height
-		self.__birdSpeed = 0
+		self.__velocity = 0
 		self.__dead = False
 		self.__birdAngle = 0
-		self.__birdY = height//2 - BIRD_SCALE_Y//2
+		self.__y = height//2 - BIRD_SCALE_Y//2
 		self.__score = 0
+		self.__frames_from_last_key = 0
 	def get(self,pipe_length:int,key:bool):
 		"""
 		returns a tuple of:
@@ -103,21 +103,27 @@ class Bird:
 		bird's angle°(0 is normal, <0 is more to the top, >0 is more to the bottom)
 		"""
 		if self.dead:
-			return (self.__birdY,self.__birdAngle)
-		self.__birdAngle+=self.__birdSpeed//10
-		self.__birdY = max(0,min(self._HEIGHT-BIRD_SCALE_Y,self.__birdY+self.__birdSpeed/10,))# +5 or hit the ground
-		self.__birdSpeed = min(6,self.__birdSpeed+6)#gravity
-
+			return (self.__y,self.__birdAngle)
 		#if key pressed
 		if key:
-			self.__birdSpeed = min(self.__birdSpeed-10000,-10000)
-		
+			self.__velocity = -10.5
+			self.__frames_from_last_key=0
+
+		self.__frames_from_last_key+=1
+		#calculate position
+		speed = min(8,max(-6,self.__velocity*(self.__frames_from_last_key) + .5*(self.__frames_from_last_key)**2))
+		self.__y = max(0,min(self._HEIGHT-BIRD_SCALE_Y,self.__y+speed,),)# +5 or hit the ground
+
+
 		#see if we collide
 		if pipe_length is None:
-			return (self.__birdY,self.__birdAngle)
+			return (round(self.__y),round(self.__birdAngle))
 		
+		if (pipe_length>=self.__y or #top
+		   pipe_length+PIPE_OFFSET_Y <= self.__y + BIRD_SCALE_Y):
+		   self.__dead = True
 
-		return (self.__birdY,self.__birdAngle)
+		return (round(self.__y),round(self.__birdAngle))
 
 ###
 	def __call__(self, *args, **kwds):
