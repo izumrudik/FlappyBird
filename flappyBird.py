@@ -1,58 +1,68 @@
+#%%
 BIRD_SCALE_X = 50
 BIRD_SCALE_Y = 40
 PIPE_SCALE_X = 50
-PIPE_OFFSET_Y = 100
+PIPE_OFFSET_Y = 200
 PIPE_DISTANCE = 200
+#%%
 import numpy as np
 from random import randint
-class FlappyBird:
-	def __init__(self,screen_HEIGHT:int,screen_WIDTH:int,):
+from typing import Optional,List
+#%%
+def __call__(*args, **kwargs):
+	return Environment(*args, **kwargs)
+#%%
+class Environment:
+	def __init__(self,screen_HEIGHT:int,screen_WIDTH:int,birds:"Optional[List[Bird]]"=None,):
 		self._WIDTH = screen_WIDTH
 		self._HEIGHT = screen_HEIGHT
 		self.__pipesX = np.array([self._WIDTH],dtype="int32")
 		self.__pipesY = np.array([randint(0,self._HEIGHT-PIPE_OFFSET_Y)],dtype="int32")
-		self.__birdY = self._HEIGHT//2
-		self.__birdAngle = 0
+		if birds is None:
+			birds = [Bird(self._HEIGHT)]
+		self.__birds = birds
 		self.__score = 0
-		self.__dead = False
-		self.__Y = 0
-		
-	def get(self, key:bool=False):
+		self.__X = 0
+		self.__dead = [False for _ in self.__birds]
+
+	def get(self, key:"bool|List[bool]"=False):
 		"""
 		returns a tuple of:
 		({
 			(length of pipe from top, it's x position to left edge)
 			,...},
 
-		(bird's top left corner's x,
-			bird's angle(0 is normal, <0 is more to the top, >0 is more to the bottom)
-		),
+		[(bird's top left corner's x,
+			bird's angle°(0 is normal, <0 is more to the top, >0 is more to the bottom)
+		)],
 		score:int,
 		dead:bool,
 		y for paralax background:int)
 		"""
-		#move bird
-		self.__birdAngle+=1
-		self.__birdY = min(self.__birdY+5,self._HEIGHT-BIRD_SCALE_Y)# +5 or hit the ground
-		#see if we died
-		if self.__dead:
-			return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,True,self.__Y//20
+		if isinstance(key,bool):
+			key = [key]
+		pipe = None
+		left_to_the_bird = self.__pipesX[self.__pipesX <= self._WIDTH//2 + BIRD_SCALE_X//2]
+		if len(left_to_the_bird) !=0:
+			idx_max = np.argmax(left_to_the_bird)
+			if self.__pipesX[idx_max]+PIPE_SCALE_X>self._WIDTH//2 - BIRD_SCALE_X//2:
+				pipe = self.__pipesY[idx_max]
 
-		#all pipes right to the bird
+		birds_returns = [bird.get(pipe,key[idx]) for idx,bird in enumerate(self.__birds)]
+
+
+		self.__dead = [b.dead for b in self.__birds]
+		if np.all(self.__dead):
+			return set(zip(self.__pipesY,self.__pipesX)),birds_returns,self.__score,[True for _ in self.__birds],self.__X//20
+
+		#move bird
+		#all pipes right-> to the bird
 		pipesBefore = self.__pipesX[self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2]
 		
 		#move pipes & background
-		self.__Y+=1
-		if self.__Y %10 == 0:
+		self.__X+=1
+		if self.__X %10 == 0:
 			self.__pipesX-=1
-			#collision
-			bird = (self._WIDTH//2-BIRD_SCALE_X//2,self.__birdY,BIRD_SCALE_X,BIRD_SCALE_Y,self.__birdAngle)
-			pipesTop = (self.__pipesX,0,PIPE_SCALE_X,self.__pipesY)
-			pipesBottom = (self.__pipesX,self.__pipesY+PIPE_OFFSET_Y,PIPE_SCALE_X,self._HEIGHT)
-			
-			colides = False
-			if colides:
-				self.__dead = True
 
 			#score
 			if (pipesBefore+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
@@ -60,7 +70,7 @@ class FlappyBird:
 
 
 		#remove pipes
-		mask = self.__pipesX<0
+		mask = self.__pipesX< -PIPE_SCALE_X
 		self.__pipesX = np.delete(self.__pipesX,mask)
 		self.__pipesY = np.delete(self.__pipesY,mask)
 		#generate pipes
@@ -70,7 +80,51 @@ class FlappyBird:
 
 
 
-		return set(zip(self.__pipesY,self.__pipesX)),(self.__birdY,self.__birdAngle),self.__score,False,self.__Y//20
-
+		return set(zip(self.__pipesY,self.__pipesX)),birds_returns,self.__score,[bird.dead for bird in self.__birds],self.__X//20
+###
 	def __call__(self, *args, **kwds):
 		return self.get(*args, **kwds)
+	@property
+	def dead(self):
+		return self.__dead
+#%%
+class Bird:
+	def __init__(self,height):
+		self._HEIGHT = height
+		self.__birdSpeed = 0
+		self.__dead = False
+		self.__birdAngle = 0
+		self.__birdY = height//2 - BIRD_SCALE_Y//2
+		self.__score = 0
+	def get(self,pipe_length:int,key:bool):
+		"""
+		returns a tuple of:
+		bird's top left corner's x,
+		bird's angle°(0 is normal, <0 is more to the top, >0 is more to the bottom)
+		"""
+		if self.dead:
+			return (self.__birdY,self.__birdAngle)
+		self.__birdAngle+=self.__birdSpeed//10
+		self.__birdY = max(0,min(self._HEIGHT-BIRD_SCALE_Y,self.__birdY+self.__birdSpeed/10,))# +5 or hit the ground
+		self.__birdSpeed = min(6,self.__birdSpeed+6)#gravity
+
+		#if key pressed
+		if key:
+			self.__birdSpeed = min(self.__birdSpeed-10000,-10000)
+		
+		#see if we collide
+		if pipe_length is None:
+			return (self.__birdY,self.__birdAngle)
+		
+
+		return (self.__birdY,self.__birdAngle)
+
+###
+	def __call__(self, *args, **kwds):
+		return self.get(*args, **kwds)
+	@property
+	def dead(self)->bool:
+		return self.__dead
+	@property
+	def score(self)->int:
+		return self.__score
