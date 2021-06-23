@@ -42,7 +42,7 @@ class Game:
 	def draw(self,key:bool,clock:pygame.time.Clock):
 		self.surface.fill((255,255,255))
 		self.game.compute_next(key)
-		pipes,((birdY,birdAngle,temp),),score,dead,paralax = self.game.result
+		pipes,((birdY,birdAngle,),),score,dead,paralax = self.game.result
 		for length,x in pipes:
 
 
@@ -61,17 +61,17 @@ class Game:
 		bird_sprite = pygame.transform.rotate(bird_sprite,-birdAngle)
 
 		rect = (bird_sprite.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
-		#.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
+		.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
 		)
 		
 		self.surface.blit(
 			bird_sprite,
 			rect
 		)
-		t1,t2 = temp
-		pygame.draw.rect(self.surface,(255,0,0,),rect,5)
-		pygame.draw.line(self.surface,(0,255,0,),(rect.left,t1),(rect.right,t1),5)
-		pygame.draw.line(self.surface,(0,0,255,),(rect.left,t2),(rect.right,t2),5)
+		#pygame.draw.rect(self.surface,(255,0,0,),rect,5)
+		#t1,t2 = temp
+		#pygame.draw.line(self.surface,(0,255,0,),(rect.left,t1),(rect.right,t1),5)
+		#pygame.draw.line(self.surface,(0,0,255,),(rect.left,t2),(rect.right,t2),5)
 
 		text =self.font.render(f"{score}",True,(0,0,255))
 		self.surface.blit(text,(self.WIDTH//2,self.HEIGHT//20))
