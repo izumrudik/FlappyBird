@@ -32,39 +32,51 @@ PIPE_TOP_SPRITE = pygame.transform.flip(PIPE_TOP_SPRITE,True,False)
 PIPE_BOTTOM_SPRITE = pygame.transform.flip(PIPE_TOP_SPRITE,False,True)
 BG_SPRITE = pygame.image.load(join("images","bg.png"))
 BG_SPRITE = pygame.transform.scale(BG_SPRITE,BG_SPRITE.get_rect(height=700).size)
+BG_WIDTH = BG_SPRITE.get_width()
 #%%
 class Game:
 	def __init__(self,surface:pygame.Surface):
 		self.surface = surface
 		self.HEIGHT = self.surface.get_height()
 		self.WIDTH = self.surface.get_width()
-		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH)
+		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,
+		[
+		flappyBird.Bird(self.HEIGHT) for _ in range(1)
+		]
+		
+		)
+
+
 		self.font = pygame.font.SysFont("", self.HEIGHT//20)
-	def draw(self,key:bool,clock:pygame.time.Clock):
+	def draw(self,key:bool,clock:pygame.time.Clock,minimum:bool=False):
 		self.surface.fill((255,255,255))
-		self.game.compute_next(key)
+		self.game.compute_next([key]*1)
 		pipes,birds,score,dead,paralax = self.game.result
 
 
 
-		x =  -(paralax/2%BG_SPRITE.get_width())
+		x =  -(paralax/2%BG_WIDTH)
+		i=0
 		while x<self.WIDTH:
+			if minimum and i > 0: break
 			self.surface.blit(BG_SPRITE,BG_SPRITE.get_rect(topleft=(x,0)))
-			x += BG_SPRITE.get_width()
+			x += BG_WIDTH
+			i+=1
 
 
 
 
 		bird_sprite = BIRD_SPRITES[paralax//20%3]
-		for birdY,birdAngle in birds:
-			bird_sprite = pygame.transform.rotate(bird_sprite,-birdAngle)
+		for idx,(birdY,birdAngle) in enumerate(birds):
+			if idx > 5 or (minimum and idx>0):break
+			bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
 
-			rect = (bird_sprite.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
+			rect = (bird_sprite_new.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
 			.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
 			)
 		
 			self.surface.blit(
-				bird_sprite,
+				bird_sprite_new,
 				rect
 			)
 
@@ -73,8 +85,8 @@ class Game:
 		#pygame.draw.line(self.surface,(0,255,0,),(rect.left,t1),(rect.right,t1),5)
 		#pygame.draw.line(self.surface,(0,0,255,),(rect.left,t2),(rect.right,t2),5)
 
-		for length,x in pipes:
-
+		for idx,(length,x) in enumerate(pipes):
+			if minimum and idx>0: break
 
 			self.surface.blit(PIPE_BOTTOM_SPRITE,
 				PIPE_BOTTOM_SPRITE.get_rect(
