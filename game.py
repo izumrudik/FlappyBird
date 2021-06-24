@@ -64,8 +64,11 @@ class Game:
 
 
 		bird_sprite = BIRD_SPRITES[paralax//20%3]
-		for idx,(birdY,birdAngle) in enumerate(birds):
-			if idx > 5 or (minimum and idx>0):break
+		alive_birds = 0
+		for idx,bird in enumerate(birds):
+			birdY,birdAngle = bird.result
+			if bird.dead or alive_birds > 5 or (minimum and alive_birds>0):continue
+			if not bird.dead: alive_birds+=1
 			bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
 
 			rect = (bird_sprite_new.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))

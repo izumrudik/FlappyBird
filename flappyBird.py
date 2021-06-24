@@ -88,8 +88,8 @@ class Environment:
 
 ###
 	@property
-	def result(self)-> Tuple[Set[Tuple[int,int]],List[Tuple[int,int]],int,List[bool],int]:
-		return set(zip(self.__pipesY,self.__pipesX)),[bird.result for bird in self.__birds],self.__score,self.dead,self.__X
+	def result(self)-> "Tuple[Set[Tuple[int,int]],List[Bird],int,List[bool],int]":
+		return set(zip(self.__pipesY,self.__pipesX)),self.__birds,self.__score,self.dead,self.__X
 	def __call__(self, *args, **kwds):
 		return self.compute_next(*args, **kwds)
 	@property
