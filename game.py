@@ -41,6 +41,7 @@ class Game:
 		self.WIDTH = self.surface.get_width()
 		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,birds
 		)
+		
 
 
 		self.font = pygame.font.SysFont("", self.HEIGHT//20)
@@ -48,7 +49,7 @@ class Game:
 		self.surface.fill((255,255,255))
 		self.game.compute_next(key)
 		pipes,birds,score,dead,paralax = self.game.result
-		self.pipes = pipes
+
 
 
 		x =  -(paralax/2%BG_WIDTH)
