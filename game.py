@@ -42,8 +42,6 @@ class Game:
 		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,birds
 		)
 		
-
-
 		self.font = pygame.font.SysFont("", self.HEIGHT//20)
 	def draw(self,key:"List[bool]|bool",clock:pygame.time.Clock,minimum:bool=False):
 		self.surface.fill((255,255,255))
@@ -67,7 +65,7 @@ class Game:
 		alive_birds = 0
 		for idx,bird in enumerate(birds):
 			birdY,birdAngle = bird.result
-			if bird.dead or alive_birds > 5 or (minimum and alive_birds>0):continue
+			if bird.dead or alive_birds > 7 or (minimum and alive_birds>1):continue
 			if not bird.dead: alive_birds+=1
 			bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
 
@@ -99,9 +97,9 @@ class Game:
 					)
 			) 
 
-		text =self.font.render(f"{score}",True,(0,0,255))
+		text =self.font.render(f"{score}",True,(255,0,255))
 		self.surface.blit(text,(self.WIDTH//2,self.HEIGHT//20))
-		text =self.font.render(f"FPS:{clock.get_fps():.0f}",True,(0,0,255))
+		text =self.font.render(f"FPS:{clock.get_fps():.0f}",True,(255,0,255))
 		self.surface.blit(text,(self.WIDTH//2,self.HEIGHT//20+36))
 		return np.all(dead)
 def main():
