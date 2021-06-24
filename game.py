@@ -44,9 +44,9 @@ class Game:
 
 
 		self.font = pygame.font.SysFont("", self.HEIGHT//20)
-	def draw(self,key:bool,clock:pygame.time.Clock,minimum:bool=False):
+	def draw(self,key:"List[bool]|bool",clock:pygame.time.Clock,minimum:bool=False):
 		self.surface.fill((255,255,255))
-		self.game.compute_next([key]*1)
+		self.game.compute_next(key)
 		pipes,birds,score,dead,paralax = self.game.result
 		self.pipes = pipes
 
@@ -112,10 +112,11 @@ def main():
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False
-			elif event.type in (pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN):
+			elif event.type ==pygame.KEYDOWN:
 				if event.key == pygame.K_m:
 					minimum = not minimum
 					continue
+			if event.type in (pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN):
 				key = True
 		
 
