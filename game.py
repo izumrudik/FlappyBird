@@ -62,13 +62,16 @@ class Game:
 		alive_birds = 0
 		for idx,bird in enumerate(birds):
 			birdY,birdAngle = bird.result
-			if bird.dead or alive_birds > 9 or (minimum and alive_birds>0):continue
+			if bird.dead:continue
+			if not minimum and alive_birds > 9: continue
 			if not bird.dead: alive_birds+=1
-			bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
+			if not minimum:
+				bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
 
 			rect = (bird_sprite_new.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
-			.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
 			)
+			if not minimum:
+				rect.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
 		
 			self.surface.blit(
 				bird_sprite_new,
