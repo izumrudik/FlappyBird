@@ -99,7 +99,7 @@ class Environment:
 	def score(self)->int:
 		return self.__score
 	@property 
-	def nearest_pipe(self)->Tuple[int,int]:
+	def closest_pipe(self)->Tuple[int,int]:
 		right_to_the_bird_mask = self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2
 		nearest_pipe_index_after_mask = np.argmin(self.__pipesX[right_to_the_bird_mask])
 		return (
