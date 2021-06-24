@@ -3,7 +3,7 @@ import pygame
 import flappyBird
 import numpy as np
 from os.path import join
-import math
+from typing import Optional,List
 #%%
 pygame.init()
 pygame.font.init()
@@ -35,15 +35,11 @@ BG_SPRITE = pygame.transform.scale(BG_SPRITE,BG_SPRITE.get_rect(height=700).size
 BG_WIDTH = BG_SPRITE.get_width()
 #%%
 class Game:
-	def __init__(self,surface:pygame.Surface):
+	def __init__(self,surface:pygame.Surface,birds:Optional[List[flappyBird.Bird]]=None):
 		self.surface = surface
 		self.HEIGHT = self.surface.get_height()
 		self.WIDTH = self.surface.get_width()
-		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,
-		[
-		flappyBird.Bird(self.HEIGHT) for _ in range(1)
-		]
-		
+		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,birds
 		)
 
 
@@ -52,7 +48,7 @@ class Game:
 		self.surface.fill((255,255,255))
 		self.game.compute_next([key]*1)
 		pipes,birds,score,dead,paralax = self.game.result
-
+		self.pipes = pipes
 
 
 		x =  -(paralax/2%BG_WIDTH)
@@ -123,7 +119,7 @@ def main():
 				key = True
 		
 
-		dead = Game.draw(game,key,clock,minimum)#game.draw()
+		dead = Game.draw(game,key,clock,minimum)#game.draw(key,clock,minimum)
 		if dead and key:
 			game = Game(screen)
 		pygame.display.flip()
