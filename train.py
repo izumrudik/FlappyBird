@@ -59,10 +59,10 @@ def compute_population(genomes,config):
 
 
 
-		for idx,bird in enumerate(birds):
-			genomes[idx][1].fitness = bird.score
-		
 
+	for idx,bird in enumerate(birds):
+		genomes[idx][1].fitness = bird.score
+		
 
 	generation+=1
 
