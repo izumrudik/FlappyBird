@@ -61,14 +61,14 @@ def compute_population(genomes,config):
 		for idx,bird in enumerate(birds):
 			genomes[idx][1].fitness = bird.score
 
-		text = font.render(f"GEN{generation},score={res[2]},FPS={clock.get_fps():.0f},frames={res[4]}",True,(255,255,255))
+		text = font.render(f"GEN{generation},score={res[2]},FPS={clock.get_fps():.0f}",True,(255,255,255))
 		screen.blit(text,(10,10))
 		pygame.display.update()
 		
 		screen.fill((0,0,0))	
 
 
-		if res[4]>PIPE_DISTANCE*150:
+		if res[2]>150:
 			break
 
 
