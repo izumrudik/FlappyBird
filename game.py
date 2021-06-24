@@ -67,12 +67,13 @@ class Game:
 			if not bird.dead: alive_birds+=1
 			if not minimum:
 				bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
-
+			else:
+				bird_sprite_new = bird_sprite
 			rect = (bird_sprite_new.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
 			)
 			if not minimum:
 				rect.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
-		
+			
 			self.surface.blit(
 				bird_sprite_new,
 				rect
