@@ -9,16 +9,16 @@ import pickle
 #%%
 font = pygame.font.SysFont("", 50)
 generation = 0
+minimum = False
 def compute_population(genomes,config):
-	global generation
+	global generation,minimum
 	screen = pygame.display.set_mode((500,800))
 	game_screen = pygame.Surface((500,700))
 	running = True
 	clock = pygame.time.Clock()
-	minimum = False
 	nets = []
 	birds = []
-	speed = 600
+	
 	for idx, genome in genomes:
 
 		net = neat.nn.FeedForwardNetwork.create(genome, config)
@@ -30,8 +30,10 @@ def compute_population(genomes,config):
 
 	game = Game(game_screen,birds)
 	while running:
-		clock.tick(speed)
-		
+		if minimum:
+			clock.tick(10000000)
+		else:
+			clock.tick(60)	
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False
