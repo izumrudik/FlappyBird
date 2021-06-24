@@ -42,7 +42,7 @@ def compute_population(genomes,config):
 
 		
 		closest_pipe = game.game.closest_pipe
-		key = [(net.activate(np.array([*closest_pipe,*birds[idx].bird_top_bottom])))[0]>0.5 for idx,net in enumerate(nets)]
+		key = [(net.activate(np.array([*closest_pipe,*birds[idx].bird_top_bottom])))[0]>0.5 if not birds[idx].dead else False for idx,net in enumerate(nets)]
 		#print(key)
 
 		dead = game.draw(key,clock,minimum)
