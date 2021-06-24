@@ -146,7 +146,7 @@ class Bird:
 		self.__y = height//2 - BIRD_SCALE_Y//2
 		self.__score = 0
 		self.__frames_from_last_key = 100
-
+		self.__bird_top_bottom = 0,0
 	def compute_next(self,pipe_length:Optional[int],key:bool,score:int)-> None:
 
 		if self.dead:
