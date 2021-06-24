@@ -177,7 +177,7 @@ class Bird:
 		BIRD_TOP_Y =    self.__y + фигня + другая_фигня
 		BIRD_BOTTOM_Y = self.__y - фигня + другая_фигня + BIRD_SCALE_Y
 
-
+		self.__bird_top_bottom = BIRD_TOP_Y,BIRD_BOTTOM_Y
 		
 
 
@@ -216,3 +216,6 @@ class Bird:
 		bird's angle°(0 is normal, <0 is more to the top, >0 is more to the bottom)
 		"""
 		return (round(self.__y),round(self.__angle))
+	@property
+	def bird_top_bottom(self)-> Tuple[int,int]:
+		return self.__bird_top_bottom
