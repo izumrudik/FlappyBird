@@ -48,10 +48,10 @@ class Environment:
 
 
 		pipe:Optional[int] = None
-		left_to_the_bird = self.__pipesX[self.__pipesX <= self._WIDTH//2 + BIRD_SCALE_X//2]
+		left_to_the_bird = self.__pipesX[self.__pipesX <= self._WIDTH//2 + BIRD_SCALE_X]
 		if len(left_to_the_bird) !=0:
 			idx_max = np.argmax(left_to_the_bird)
-			if self.__pipesX[idx_max]+PIPE_SCALE_X>self._WIDTH//2 - BIRD_SCALE_X//2:
+			if self.__pipesX[idx_max]+PIPE_SCALE_X>self._WIDTH//2:
 				pipe = self.__pipesY[idx_max]
 
 		for idx,bird in enumerate(self.__birds):
@@ -64,14 +64,14 @@ class Environment:
 
 		#move bird
 		#all pipes right-> to the bird
-		right_to_the_bird = self.__pipesX[self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2]
+		right_to_the_bird = self.__pipesX[self.__pipesX >= self._WIDTH//2 + BIRD_SCALE_X]
 		
 		#move pipes & background
 		self.__X+=1
 		self.__pipesX-=1
 
 			#score
-		if (right_to_the_bird+PIPE_SCALE_X <= self._WIDTH//2 - BIRD_SCALE_X//2).any():
+		if (right_to_the_bird <= self._WIDTH//2 + BIRD_SCALE_X).any():
 			self.__score+=1
 
 
@@ -100,7 +100,7 @@ class Environment:
 		return self.__score
 	@property 
 	def closest_pipe(self)->Tuple[int,int]:
-		right_to_the_bird_mask = self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2
+		right_to_the_bird_mask = self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 
 		if not np.any(right_to_the_bird_mask):
 			return self._WIDTH,0
 		nearest_pipe_index_after_mask = np.argmin(self.__pipesX[right_to_the_bird_mask])
