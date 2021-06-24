@@ -109,6 +109,7 @@ def main():
 	game = Game(screen)
 	running = True
 	clock = pygame.time.Clock()
+	minimum = False
 	while running:
 		clock.tick(60)
 		key = False
@@ -116,10 +117,13 @@ def main():
 			if event.type == pygame.QUIT:
 				running = False
 			elif event.type in (pygame.KEYDOWN,pygame.MOUSEBUTTONDOWN):
+				if event.key == pygame.K_m:
+					minimum = not minimum
+					continue
 				key = True
 		
 
-		dead = Game.draw(game,key,clock)#game.draw()
+		dead = Game.draw(game,key,clock,minimum)#game.draw()
 		if dead and key:
 			game = Game(screen)
 		pygame.display.flip()
