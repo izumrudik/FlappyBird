@@ -68,9 +68,6 @@ def compute_population(genomes,config):
 		screen.fill((0,0,0))	
 
 
-		if res[2]>150:
-			break
-
 
 
 	generation+=1
