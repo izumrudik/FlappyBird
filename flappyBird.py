@@ -101,6 +101,8 @@ class Environment:
 	@property 
 	def closest_pipe(self)->Tuple[int,int]:
 		right_to_the_bird_mask = self.__pipesX+PIPE_SCALE_X >= self._WIDTH//2 - BIRD_SCALE_X//2
+		if not np.any(right_to_the_bird_mask):
+			return self._WIDTH,0
 		nearest_pipe_index_after_mask = np.argmin(self.__pipesX[right_to_the_bird_mask])
 		return (
 			self.__pipesX[right_to_the_bird_mask][nearest_pipe_index_after_mask],
