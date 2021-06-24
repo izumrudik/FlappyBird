@@ -49,15 +49,12 @@ class Game:
 		pipes,birds,score,dead,paralax = self.game.result
 
 
-
-		x =  -(paralax/2%BG_WIDTH)
-		i=0
-		while x<self.WIDTH:
-			if minimum and i > 0: break
-			self.surface.blit(BG_SPRITE,BG_SPRITE.get_rect(topleft=(x,0)))
-			x += BG_WIDTH
-			i+=1
-
+		if not minimum:
+			x =  -(paralax/2%BG_WIDTH)
+			while x<self.WIDTH:
+			
+				self.surface.blit(BG_SPRITE,BG_SPRITE.get_rect(topleft=(x,0)))
+				x += BG_WIDTH
 
 
 
@@ -65,7 +62,7 @@ class Game:
 		alive_birds = 0
 		for idx,bird in enumerate(birds):
 			birdY,birdAngle = bird.result
-			if bird.dead or alive_birds > 7 or (minimum and alive_birds>1):continue
+			if bird.dead or alive_birds > 9 or (minimum and alive_birds>0):continue
 			if not bird.dead: alive_birds+=1
 			bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
 
