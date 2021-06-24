@@ -4,6 +4,7 @@ import flappyBird
 import numpy as np
 from os.path import join
 from typing import Optional,List
+from functools import cache
 #%%
 pygame.init()
 pygame.font.init()
@@ -34,6 +35,13 @@ BG_SPRITE = pygame.image.load(join("images","bg.png"))
 BG_SPRITE = pygame.transform.scale(BG_SPRITE,BG_SPRITE.get_rect(height=700).size)
 BG_WIDTH = BG_SPRITE.get_width()
 #%%
+@cache
+def get_rotated_image(n,angle):
+	return pygame.transform.rotate(BIRD_SPRITES[n],-angle)
+@cache
+def get_offset_vector(angle):
+	return (-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(angle))
+
 class Game:
 	def __init__(self,surface:pygame.Surface,birds:Optional[List[flappyBird.Bird]]=None):
 		self.surface = surface
@@ -58,24 +66,21 @@ class Game:
 
 
 
-		bird_sprite = BIRD_SPRITES[paralax//20%3]
-		alive_birds = 0
+		
 		for idx,bird in enumerate(birds):
 			birdY,birdAngle = bird.result
 			if bird.dead:continue
-			if not minimum and alive_birds > 9: continue
-			if not bird.dead: alive_birds+=1
-			if not minimum:
-				bird_sprite_new = pygame.transform.rotate(bird_sprite,-birdAngle)
-			else:
-				bird_sprite_new = bird_sprite
-			rect = (bird_sprite_new.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
-			)
-			if not minimum:
-				rect.move(-pygame.math.Vector2(-flappyBird.BIRD_SCALE_X//2,0).rotate(birdAngle))
-			
+
+
+			bird_sprite = get_rotated_image(paralax//20%3,birdAngle)
+			rect = (bird_sprite.get_rect(center=(self.WIDTH//2,birdY+flappyBird.BIRD_SCALE_Y//2,))
+			).move(get_offset_vector(birdAngle))
+
+
+
+
 			self.surface.blit(
-				bird_sprite_new,
+				bird_sprite,
 				rect
 			)
 

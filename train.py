@@ -1,5 +1,5 @@
 #%%
-from flappyBird import Bird
+from flappyBird import Bird, PIPE_DISTANCE
 import neat
 import pygame
 import numpy as np
@@ -10,9 +10,10 @@ import pickle
 font = pygame.font.SysFont("", 50)
 generation = 0
 minimum = False
+text_mode = False
 def compute_population(genomes,config):
-	global generation,minimum
-	screen = pygame.display.set_mode((500,800))
+	global generation,minimum,text_mode
+	screen = pygame.display.set_mode((700,800))
 	game_screen = pygame.Surface((500,700))
 	running = True
 	clock = pygame.time.Clock()
@@ -27,10 +28,9 @@ def compute_population(genomes,config):
 		birds.append(Bird(game_screen.get_height()))
 
 
-
 	game = Game(game_screen,birds)
 	while running:
-		if minimum:
+		if minimum or text_mode:
 			clock.tick(10000000)
 		else:
 			clock.tick(60)	
@@ -41,35 +41,42 @@ def compute_population(genomes,config):
 				if event.key == pygame.K_m:
 					minimum = not minimum
 					continue
+				if event.key == pygame.K_t:
+					text_mode = not text_mode
 
 		
 		closest_pipe = game.game.closest_pipe
 		key = [(net.activate(np.array([*closest_pipe,*birds[idx].bird_top_bottom])))[0]>0.5 if not birds[idx].dead else False for idx,net in enumerate(nets)]
 		#print(key)
-
-		dead = game.draw(key,clock,minimum)
+		if not text_mode:
+			dead = game.draw(key,clock,minimum)
+			screen.blit(game_screen,(0,100))
+		else:
+			game.game.compute_next(key)
+			dead = np.all(game.game.result[3])
 		if dead: break 
-		screen.blit(game_screen,(0,100))
-		text = font.render(f"{generation=}",True,(255,255,255))
-		screen.blit(text,(10,30))
+
+		res = game.game.result
+
+		for idx,bird in enumerate(birds):
+			genomes[idx][1].fitness = bird.score
+
+		text = font.render(f"GEN{generation},score={res[2]},FPS={clock.get_fps():.0f},frames={res[4]}",True,(255,255,255))
+		screen.blit(text,(10,10))
 		pygame.display.update()
 		
 		screen.fill((0,0,0))	
 
 
+		if res[4]>PIPE_DISTANCE*150:
+			break
 
 
-
-
-
-	for idx,bird in enumerate(birds):
-		genomes[idx][1].fitness = bird.score
-		
 
 	generation+=1
 
 def save(something,*path):
-	return pickle.dump(something,open(os.path.join("neiro",*path),'wb'))
+	return pickle.dump(something,open(os.path.join(*path),'wb'))
 
 
 def main(file=os.path.join("neat_stuff","best.pkl"),max_gens=10):
@@ -83,8 +90,10 @@ def main(file=os.path.join("neat_stuff","best.pkl"),max_gens=10):
 	stats = neat.StatisticsReporter()
 	population.add_reporter(stats)
 	population.run(compute_population,max_gens)
-	try:iter(file)
-	except TypeError: file = (file,)
+	
+	if isinstance(file,str):file = file,
+	
+	
 	save(population.best_genome,*file)
 
 
