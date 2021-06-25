@@ -1,11 +1,8 @@
-from game import main as run_game_for_one_user
-from train import main as train_main
-from work import main as work_main
 import os
 import argparse
-parser = argparse.ArgumentParser(description="""A flappy bird game!
-You can use -t flag to run training (try pressing "t" and "m" )
-You can use -l flag to run best genome
+parser = argparse.ArgumentParser(description="""A flappy bird game!\n
+You can use -t flag to run training (try pressing "t" and "m" )\n
+You can use -l flag to run best genome\n
 You can use -p flag to play yourself  (try pressing "m" )""")
 
 
@@ -14,11 +11,17 @@ def main():
 	group.add_argument("-t","--train"  ,action="store_true",help="used to make trained bird's file (-f) with maximum (-g) generations")
 	group.add_argument("-l","--learned",action="store_true",help="used to run learned bird's simulation from file (-f)")
 	group.add_argument("-p","--play", action="store_true",help="used to run game in singleplayer")
-	parser.add_argument("-f","--file",type=str,default=os.path.join("neat_stuff","best.pkl"),help="type file name and it will be used")
-	parser.add_argument("-g","--generations",type=int,default=10,help="int number of generations ")
+	parser.add_argument("-f","--file",type=str,default=os.path.join("neat_stuff","best.pkl"),help="file name",metavar="")
+	parser.add_argument("-g","--generations",type=int,default=10,help="int number of generations ",metavar="")
 
 
 	args = parser.parse_args()
+
+
+
+	from game import main as run_game_for_one_user
+	from train import main as train_main
+	from work import main as work_main
 
 	if args.learned:
 		work_main(args.file)
