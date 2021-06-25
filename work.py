@@ -6,14 +6,15 @@ from game import Game
 import neat
 from typing import List
 import numpy as np
+from main import resource_path as join
 def load(*file):
-	return pickle.load(open(os.path.join(*file),'rb'))
+	return pickle.load(open(join(*file),'rb'))
 
 
 def main(file:"str|List[str]"=["neat_stuff","best.pkl"]):
 	if isinstance(file,str):file = file,
 	genome = load(*file)
-	config_path = os.path.join("neat_stuff", "config-feedforward.txt")
+	config_path = join("neat_stuff", "config-feedforward.txt")
 	config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
 							neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 	net = neat.nn.FeedForwardNetwork.create(genome, config)

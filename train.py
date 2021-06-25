@@ -1,11 +1,12 @@
 #%%
-from flappyBird import Bird, PIPE_DISTANCE
+from flappyBird import Bird
 import neat
 import pygame
 import numpy as np
 from game import Game
 import os
 import pickle
+from main import resource_path as join
 #%%
 font = pygame.font.SysFont("arial", 50)
 generation = 0
@@ -73,11 +74,11 @@ def compute_population(genomes,config):
 	generation+=1
 
 def save(something,*path):
-	return pickle.dump(something,open(os.path.join(*path),'wb'))
+	return pickle.dump(something,open(join(*path),'wb'))
 
 
-def main(file=os.path.join("neat_stuff","best.pkl"),max_gens=10):
-	config_path = os.path.join("neat_stuff", "config-feedforward.txt")
+def main(file=join("neat_stuff","best.pkl"),max_gens=10):
+	config_path = join("neat_stuff", "config-feedforward.txt")
 	config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
 							neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 

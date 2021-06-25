@@ -2,9 +2,9 @@
 import pygame
 import flappyBird
 import numpy as np
-from os.path import join
 from typing import Optional,List
 from functools import cache
+from main import resource_path as join
 #%%
 pygame.init()
 pygame.font.init()
