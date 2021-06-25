@@ -7,7 +7,7 @@ from game import Game
 import os
 import pickle
 #%%
-font = pygame.font.SysFont("", 50)
+font = pygame.font.SysFont("arial", 50)
 generation = 0
 minimum = False
 text_mode = False

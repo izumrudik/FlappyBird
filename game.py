@@ -50,7 +50,7 @@ class Game:
 		self.game = flappyBird.FlappyBird(self.HEIGHT,self.WIDTH,birds
 		)
 		
-		self.font = pygame.font.SysFont("", self.HEIGHT//20)
+		self.font = pygame.font.SysFont("arial", self.HEIGHT//20)
 	def draw(self,key:"List[bool]|bool",clock:pygame.time.Clock,minimum:bool=False):
 		self.surface.fill((255,255,255))
 		self.game.compute_next(key)
