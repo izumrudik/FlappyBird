@@ -9,7 +9,7 @@ import numpy as np
 from random import randint
 from typing import Optional,List,Tuple,Set
 from math import sqrt,sin,cos,atan as arctg,pi as Pi,radians
-from functools import cache
+from functools import lru_cache as cache
 #%%
 def FlappyBird(*args, **kwargs):
 	return Environment(*args, **kwargs)
@@ -113,26 +113,26 @@ class Environment:
 def clamp(min_,max_,num):
 	return max(min_,min(max_,num))
 @cache
-def calculate_фигни(angle):
-	другая_фигня = sin(radians(-angle))*BIRD_SCALE_X/2
+def calculate_nums(angle):
+	second_thing = sin(radians(-angle))*BIRD_SCALE_X/2
 	angle%=360
 	if angle <=90:
 		angle+=360
 		angle = radians(angle)
-		return cos(Pi/2+angle/2-arctg(BIRD_SCALE_X/BIRD_SCALE_Y))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle))),другая_фигня	
+		return cos(Pi/2+angle/2-arctg(BIRD_SCALE_X/BIRD_SCALE_Y))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle))),second_thing	
 	elif angle <= 180:
 		angle+=270
 		angle = radians(angle)
-		return (cos(Pi/2+angle/2-arctg(BIRD_SCALE_Y/BIRD_SCALE_X))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle)))) - abs(BIRD_SCALE_X-BIRD_SCALE_Y)/2,другая_фигня
+		return (cos(Pi/2+angle/2-arctg(BIRD_SCALE_Y/BIRD_SCALE_X))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle)))) - abs(BIRD_SCALE_X-BIRD_SCALE_Y)/2,second_thing
 
 	elif angle <=270:
 		angle+=180
 		angle = radians(angle)
-		return cos(Pi/2+angle/2-arctg(BIRD_SCALE_X/BIRD_SCALE_Y))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle))),другая_фигня
+		return cos(Pi/2+angle/2-arctg(BIRD_SCALE_X/BIRD_SCALE_Y))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle))),second_thing
 	else:
 		angle+=90
 		angle = radians(angle)
-		return (cos(Pi/2+angle/2-arctg(BIRD_SCALE_Y/BIRD_SCALE_X))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle)))) - abs(BIRD_SCALE_X-BIRD_SCALE_Y)/2,другая_фигня
+		return (cos(Pi/2+angle/2-arctg(BIRD_SCALE_Y/BIRD_SCALE_X))*sqrt(1/2*(BIRD_SCALE_X**2+BIRD_SCALE_Y**2)*(1-cos(angle)))) - abs(BIRD_SCALE_X-BIRD_SCALE_Y)/2,second_thing
 
 
 		
@@ -170,18 +170,15 @@ class Bird:
 
 
 
-		фигня,другая_фигня = calculate_фигни(-self.__angle)
+		thing,other = calculate_nums(-self.__angle)
 
-		self.__y = clamp(0,self._HEIGHT-BIRD_SCALE_Y-другая_фигня+фигня,self.__y)#or hit the ground
+		self.__y = clamp(0,self._HEIGHT-BIRD_SCALE_Y-other+thing,self.__y)#or hit the ground
 		
-		BIRD_TOP_Y =    self.__y + фигня + другая_фигня
-		BIRD_BOTTOM_Y = self.__y - фигня + другая_фигня + BIRD_SCALE_Y
+		BIRD_TOP_Y =	 self.__y + thing + other
+		BIRD_BOTTOM_Y = self.__y - thing + other + BIRD_SCALE_Y
 
 		self.__bird_top_bottom = BIRD_TOP_Y,BIRD_BOTTOM_Y
 		
-
-
-		#see if we collide
 		if self._HEIGHT<=BIRD_BOTTOM_Y:
 			self.__dead = True
 			#self.__angle = 90
@@ -189,12 +186,12 @@ class Bird:
 		if pipe_length is None:
 			return 
 		
-		if pipe_length>=BIRD_TOP_Y: #top pipe
-		   self.__dead = True
-		   self.Y = pipe_length
-		if pipe_length+PIPE_OFFSET_Y <= BIRD_BOTTOM_Y:#bottom pipe
-		   self.__dead = True
-		   self.Y = pipe_length+PIPE_OFFSET_Y-BIRD_SCALE_Y
+		if pipe_length>=BIRD_TOP_Y: 
+			self.__dead = True
+			self.Y = pipe_length
+		if pipe_length+PIPE_OFFSET_Y <= BIRD_BOTTOM_Y:
+			self.__dead = True
+			self.Y = pipe_length+PIPE_OFFSET_Y-BIRD_SCALE_Y
 
 		return
 

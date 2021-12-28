@@ -3,7 +3,7 @@ import pygame
 import flappyBird
 import numpy as np
 from typing import Optional,List
-from functools import cache
+from functools import lru_cache as cache
 from main import resource_path as join
 #%%
 pygame.init()

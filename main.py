@@ -9,7 +9,7 @@ def resource_path(*relative):
 
 def main():
 	parser = argparse.ArgumentParser(description="""A flappy bird game!\n
-You can use -t flag to run training (try pressing "t" and "m" )\n
+You can use -t flag to run training (try pressing "p","t" and "m" )\n
 You can use -l flag to run best genome\n
 You can use -p flag to play yourself  (try pressing "m" )""")
 
